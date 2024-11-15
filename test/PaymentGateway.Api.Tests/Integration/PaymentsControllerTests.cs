@@ -5,31 +5,62 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 using PaymentGateway.Api.Controllers;
-using PaymentGateway.Api.Models.Responses;
-using PaymentGateway.Api.Services;
+using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Models.Payments;
+using PaymentGateway.Api.Models.CardPayments;
+using PaymentGateway.Api.Repository;
 
 namespace PaymentGateway.Api.Tests.Integration;
 
 public class PaymentsControllerTests
 {
-    private readonly Random _random = new();
+    [Fact]
+    public async Task MakesAPaymentSuccessfully()
+    {
+        // Arrange
+        var payment = new PostPaymentRequest
+        {
+            ExpiryYear = 2030,
+            ExpiryMonth = 4,
+            Amount = 1000,
+            CardNumberLastFour = 3487,
+            Currency = "GBP"
+        };
+
+        var paymentsRepository = new InMemoryPaymentsRepository();
+
+        var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
+        var client = webApplicationFactory.WithWebHostBuilder(builder =>
+            builder.ConfigureServices(services => ((ServiceCollection)services)
+                .AddSingleton(paymentsRepository)))
+            .CreateClient();
+
+        // Act
+        var response = await client.PostAsJsonAsync($"/api/Payments/", payment);
+        var paymentResponse = await response.Content.ReadFromJsonAsync<PostPaymentResponse>();
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(paymentResponse);
+        Assert.Equal(PaymentStatus.Authorized, paymentResponse.Status);
+    }
 
     [Fact]
     public async Task RetrievesAPaymentSuccessfully()
     {
         // Arrange
-        var payment = new PostPaymentResponse
+        var payment = new CardPayment
         {
             Id = Guid.NewGuid(),
-            ExpiryYear = _random.Next(2023, 2030),
-            ExpiryMonth = _random.Next(1, 12),
-            Amount = _random.Next(1, 10000),
-            CardNumberLastFour = _random.Next(1111, 9999),
+            ExpiryYear = 2023,
+            ExpiryMonth =8,
+            Amount = 900,
+            CardNumber = 2345,
             Currency = "GBP"
         };
 
-        var paymentsRepository = new PaymentsRepository();
-        paymentsRepository.Add(payment);
+        var paymentsRepository = new InMemoryPaymentsRepository();
+        paymentsRepository.AddOrUpdate(payment);
 
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
@@ -39,7 +70,7 @@ public class PaymentsControllerTests
 
         // Act
         var response = await client.GetAsync($"/api/Payments/{payment.Id}");
-        var paymentResponse = await response.Content.ReadFromJsonAsync<PostPaymentResponse>();
+        var paymentResponse = await response.Content.ReadFromJsonAsync<GetPaymentResponse>();
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

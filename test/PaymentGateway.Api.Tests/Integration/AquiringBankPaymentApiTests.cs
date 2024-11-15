@@ -4,8 +4,7 @@ using System.Text.Json;
 
 using Microsoft.Extensions.Configuration;
 
-using PaymentGateway.Api.Models.Requests;
-using PaymentGateway.Api.Models.Responses;
+using PaymentGateway.Api.Models.AquiringBank;
 using PaymentGateway.Api.Tests.Configuration;
 
 namespace PaymentGateway.Api.Tests.Integration

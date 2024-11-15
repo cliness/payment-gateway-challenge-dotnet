@@ -1,4 +1,4 @@
-﻿namespace PaymentGateway.Api.Models.Requests;
+﻿namespace PaymentGateway.Api.Models.AquiringBank;
 
 public class AquiringBankPaymentRequest
 {
