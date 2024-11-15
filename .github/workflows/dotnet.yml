@@ -17,6 +17,7 @@ jobs:
     steps:    
     - uses: actions/checkout@v4
     - name: Start containers
+      uses: blag/action-docker-compose@v0.0.1
       run: docker-compose -f "docker-compose.yml" up -d --build
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -29,5 +30,6 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Stop containers
+      uses: blag/action-docker-compose@v0.0.1
       if: always()
       run: docker-compose -f "docker-compose.yml" down
