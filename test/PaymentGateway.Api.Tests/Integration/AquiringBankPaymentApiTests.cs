@@ -10,7 +10,7 @@ using PaymentGateway.Api.Tests.Configuration;
 
 namespace PaymentGateway.Api.Tests.Integration
 {
-    [Trait("Category", "ThirdPartyIntegration")]
+    [Trait("Category", "ThirdPartyAPI")]
     public class AquiringBankPaymentApiTests
     {
         private readonly Uri acquiringPaymentEndpoint;

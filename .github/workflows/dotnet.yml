@@ -16,10 +16,6 @@ jobs:
 
     steps:    
     - uses: actions/checkout@v4
-    - name: Start containers
-      uses: blag/action-docker-compose@v0.0.1
-      with: 
-        cli-args: -f docker-compose.yml up -d --build
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -29,9 +25,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: Stop containers
-      uses: blag/action-docker-compose@v0.0.1
-      if: always()
-      with: 
-        cli-args: -f docker-compose.yml down
+      run: dotnet test --no-build --verbosity normal -filter "Category!=ThirdPartyAPI"
