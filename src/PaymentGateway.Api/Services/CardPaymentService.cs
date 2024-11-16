@@ -10,13 +10,13 @@ namespace PaymentGateway.Api.Services
 {
     public class CardPaymentService : ICardPaymentService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IPaymentsRepository _paymentsRepository;
         private readonly JsonSerializerOptions _serializeOptions;
 
-        public CardPaymentService(HttpClient httpClient, IPaymentsRepository paymentsRepository)
+        public CardPaymentService(IHttpClientFactory httpClientFactory, IPaymentsRepository paymentsRepository)
         {
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _paymentsRepository = paymentsRepository;
 
             _serializeOptions = new JsonSerializerOptions
@@ -31,6 +31,7 @@ namespace PaymentGateway.Api.Services
 
             var aquiringBankPaymentRequest = payment.ToAquiringBankPaymentRequest();
 
+            using var _httpClient = _httpClientFactory.CreateClient(nameof(CardPaymentService));
             var response = await _httpClient.PostAsJsonAsync("payments", aquiringBankPaymentRequest, _serializeOptions);
 
             if (response.StatusCode == HttpStatusCode.OK)

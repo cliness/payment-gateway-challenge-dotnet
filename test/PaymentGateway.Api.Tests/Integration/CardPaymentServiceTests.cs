@@ -2,6 +2,8 @@
 
 using Microsoft.Extensions.Configuration;
 
+using Moq;
+
 using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Models.CardPayments;
 using PaymentGateway.Api.Repository;
@@ -30,7 +32,7 @@ namespace PaymentGateway.Api.Tests.Integration
         }
 
         [Fact]
-        public async Task Payment_AuthorisedCard_ReturnsAuthorisedPayment()
+        public async Task MakePayment_AuthorisedCard_ReturnsAuthorisedPayment()
         {
             //Arrange
             var httpClient = new HttpClient()
@@ -54,7 +56,11 @@ namespace PaymentGateway.Api.Tests.Integration
                 Amount = 100,
             };
             InMemoryPaymentsRepository paymentsRepository = new InMemoryPaymentsRepository();
-            var cardPaymentService = new CardPaymentService(httpClient, paymentsRepository);
+
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+            var cardPaymentService = new CardPaymentService(httpClientFactoryMock.Object, paymentsRepository);
 
             //Act
             var returnedCardPayment = await cardPaymentService.MakePayment(cardPayment);

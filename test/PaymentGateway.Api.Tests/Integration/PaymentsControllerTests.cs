@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 using PaymentGateway.Api.Controllers;
 using PaymentGateway.Api.Models;
@@ -10,7 +11,6 @@ using PaymentGateway.Api.Models.Payments;
 using PaymentGateway.Api.Models.CardPayments;
 using PaymentGateway.Api.Repository;
 using PaymentGateway.Api.Services;
-using Microsoft.Extensions.Configuration;
 using PaymentGateway.Api.Tests.Configuration;
 
 namespace PaymentGateway.Api.Tests.Integration;
@@ -54,7 +54,7 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddHttpClient<ICardPaymentService, CardPaymentService>(client =>
+                .AddHttpClient(nameof(CardPaymentService), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
                 })))
@@ -92,7 +92,7 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddHttpClient<ICardPaymentService, CardPaymentService>(client =>
+                .AddHttpClient(nameof(CardPaymentService), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
                 })))
@@ -116,7 +116,7 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>()
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddHttpClient<ICardPaymentService, CardPaymentService>(client =>
+                .AddHttpClient(nameof(CardPaymentService), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
                 })))

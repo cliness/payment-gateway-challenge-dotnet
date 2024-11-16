@@ -23,7 +23,7 @@ if (acquiringPayment?.ServiceEndpoint == null)
 
 builder.Services.AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>();
 builder.Services.AddSingleton<ICardPaymentService, CardPaymentService>();
-builder.Services.AddHttpClient<ICardPaymentService, CardPaymentService>(client =>
+builder.Services.AddHttpClient(nameof(CardPaymentService), client =>
 {
     client.BaseAddress = acquiringPayment.ServiceEndpoint;
 });
