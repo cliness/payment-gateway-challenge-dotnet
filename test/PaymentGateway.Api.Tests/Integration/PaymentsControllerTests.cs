@@ -15,6 +15,7 @@ using PaymentGateway.Api.Tests.Configuration;
 
 namespace PaymentGateway.Api.Tests.Integration;
 
+[Trait("Category", "ThirdPartyAPI")]
 public class PaymentsControllerTests
 {
     private readonly Uri _acquiringPaymentEndpoint;
