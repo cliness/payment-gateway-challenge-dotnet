@@ -22,7 +22,7 @@ namespace PaymentGateway.Api.Tests.Unit.Model.Translators
                 Amount = 100,
                 Currency = "GBP",
 
-                AuthorizationCode = Guid.NewGuid().ToString(),
+                AuthorizationCode = Guid.NewGuid(),
                 Status = PaymentStatus.Authorized,
             };
 

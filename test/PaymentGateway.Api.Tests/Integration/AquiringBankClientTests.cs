@@ -6,15 +6,17 @@ using Microsoft.Extensions.Configuration;
 
 using PaymentGateway.Api.Models.AquiringBank;
 using PaymentGateway.Api.Tests.Configuration;
+using PaymentGateway.Api.Infrastructure;
+using Moq;
 
 namespace PaymentGateway.Api.Tests.Integration
 {
     [Trait("Category", "ThirdPartyAPI")]
-    public class AquiringBankPaymentApiTests
+    public class AquiringBankClientTests
     {
         private readonly Uri _acquiringPaymentEndpoint;
 
-        public AquiringBankPaymentApiTests()
+        public AquiringBankClientTests()
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.test.json")
@@ -51,18 +53,18 @@ namespace PaymentGateway.Api.Tests.Integration
                 Currency = "GBP",
                 Amount = 100,                
             };
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+            var aquiringBankClient = new AquiringBankClient(httpClientFactory.Object);
 
             //Act
-            var httpResponse = await httpClient.PostAsJsonAsync("payments", paymentRequest, serializeOptions);
+            var paymentResponse = await aquiringBankClient.PostPayment(paymentRequest);
 
             //Assert
-            httpResponse.EnsureSuccessStatusCode();
-
-            var paymentResponse = await httpResponse.Content.ReadFromJsonAsync<AquiringBankPaymentResponse>(serializeOptions);
-
             Assert.NotNull(paymentResponse);
             Assert.True(paymentResponse.Authorized);
-            Assert.NotEmpty(paymentResponse.AuthorizationCode);
+            Assert.NotNull(paymentResponse.AuthorizationCode);
         }
 
         [Fact]
@@ -88,17 +90,18 @@ namespace PaymentGateway.Api.Tests.Integration
                 Cvv = "456"
             };
 
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+            var aquiringBankClient = new AquiringBankClient(httpClientFactory.Object);
+
             //Act
-            var httpResponse = await httpClient.PostAsJsonAsync("payments", paymentRequest, serializeOptions);
+            var paymentResponse = await aquiringBankClient.PostPayment(paymentRequest);
 
             //Assert
-            httpResponse.EnsureSuccessStatusCode();
-
-            var paymentResponse = await httpResponse.Content.ReadFromJsonAsync<AquiringBankPaymentResponse>(serializeOptions);
-
             Assert.NotNull(paymentResponse);
             Assert.False(paymentResponse.Authorized);
-            Assert.Empty(paymentResponse.AuthorizationCode);
+            Assert.Null(paymentResponse.AuthorizationCode);
         }
 
         [Fact]
@@ -130,16 +133,17 @@ namespace PaymentGateway.Api.Tests.Integration
                 Cvv = "456"
             };
 
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+            var aquiringBankClient = new AquiringBankClient(httpClientFactory.Object);
+
             //Act
-            var httpResponse = await httpClient.PostAsJsonAsync("payments", paymentRequest, requestSerializeOptions);
+            var paymentResponse = await aquiringBankClient.PostPayment(paymentRequest);
 
             //Assert
-            Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
-
-            var paymentResponse = await httpResponse.Content.ReadFromJsonAsync<AquiringPaymentErrorResponse>();
             Assert.NotNull(paymentResponse);
-            Assert.NotEmpty(paymentResponse.ErrorMessage);
-
+            Assert.NotNull(paymentResponse?.ErrorMessage);
         }
     }
 }

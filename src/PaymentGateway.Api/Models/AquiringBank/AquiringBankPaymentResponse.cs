@@ -1,4 +1,6 @@
-﻿namespace PaymentGateway.Api.Models.AquiringBank;
+﻿using System.Text.Json.Serialization;
+
+namespace PaymentGateway.Api.Models.AquiringBank;
 
 public class AquiringBankPaymentResponse
 {

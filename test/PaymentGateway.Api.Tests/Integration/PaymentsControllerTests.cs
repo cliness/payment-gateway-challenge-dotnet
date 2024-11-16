@@ -12,6 +12,7 @@ using PaymentGateway.Api.Models.CardPayments;
 using PaymentGateway.Api.Repository;
 using PaymentGateway.Api.Services;
 using PaymentGateway.Api.Tests.Configuration;
+using PaymentGateway.Api.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration;
 
@@ -44,7 +45,7 @@ public class PaymentsControllerTests
             Cvv = "123",
             ExpiryYear = 2025,
             ExpiryMonth = 4,
-            Amount = 100,            
+            Amount = 100,
             Currency = "GBP"
         };
 
@@ -55,14 +56,15 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddHttpClient(nameof(CardPaymentService), client =>
+                .AddSingleton<IAquiringBankClient, AquiringBankClient>()
+                .AddHttpClient(nameof(AquiringBankClient), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
                 })))
             .CreateClient();
 
         // Act
-        var response = await client.PostAsJsonAsync($"/api/Payments/", payment);        
+        var response = await client.PostAsJsonAsync($"/api/Payments/", payment);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -84,7 +86,7 @@ public class PaymentsControllerTests
             ExpiryYear = 2025,
             ExpiryMonth = 4,
 
-            Amount = 100,            
+            Amount = 100,
             Currency = "GBP",
 
             Status = PaymentStatus.Authorized
@@ -98,14 +100,15 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddHttpClient(nameof(CardPaymentService), client =>
+                .AddSingleton<IAquiringBankClient, AquiringBankClient>()
+                .AddHttpClient(nameof(AquiringBankClient), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
                 })))
             .CreateClient();
 
         // Act
-        var response = await client.GetAsync($"/api/Payments/{payment.Id}");        
+        var response = await client.GetAsync($"/api/Payments/{payment.Id}");
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -122,7 +125,8 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>()
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddHttpClient(nameof(CardPaymentService), client =>
+                .AddSingleton<IAquiringBankClient, AquiringBankClient>()
+                .AddHttpClient(nameof(AquiringBankClient), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
                 })))

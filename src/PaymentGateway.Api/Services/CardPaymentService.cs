@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 
+using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Models.AquiringBank;
 using PaymentGateway.Api.Models.CardPayments;
 using PaymentGateway.Api.Models.Translators;
@@ -10,19 +11,13 @@ namespace PaymentGateway.Api.Services
 {
     public class CardPaymentService : ICardPaymentService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IAquiringBankClient _paymentGatewayClient;
         private readonly IPaymentsRepository _paymentsRepository;
-        private readonly JsonSerializerOptions _serializeOptions;
 
-        public CardPaymentService(IHttpClientFactory httpClientFactory, IPaymentsRepository paymentsRepository)
+        public CardPaymentService(IAquiringBankClient paymentGatewayClient, IPaymentsRepository paymentsRepository)
         {
-            _httpClientFactory = httpClientFactory;
+            _paymentGatewayClient = paymentGatewayClient;
             _paymentsRepository = paymentsRepository;
-
-            _serializeOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-            };
         }
 
         public async Task<CardPayment> MakePayment(CardPayment payment)
@@ -31,25 +26,17 @@ namespace PaymentGateway.Api.Services
 
             var aquiringBankPaymentRequest = payment.ToAquiringBankPaymentRequest();
 
-            using var _httpClient = _httpClientFactory.CreateClient(nameof(CardPaymentService));
-            var response = await _httpClient.PostAsJsonAsync("payments", aquiringBankPaymentRequest, _serializeOptions);
+            var aquiringBankPaymentResponse = await _paymentGatewayClient.PostPayment(aquiringBankPaymentRequest);
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (aquiringBankPaymentResponse != null && aquiringBankPaymentResponse.Authorized)
             {
-                var acquringBankPaymentResponse = await response.Content.ReadFromJsonAsync<AquiringBankPaymentResponse>(_serializeOptions);
-                if (acquringBankPaymentResponse != null && acquringBankPaymentResponse.Authorized)
-                {
-                    payment.Status = Models.PaymentStatus.Authorized;
-                    payment.AuthorizationCode = acquringBankPaymentResponse.AuthorizationCode;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            } else
+                payment.Status = Models.PaymentStatus.Authorized;
+                payment.AuthorizationCode = aquiringBankPaymentResponse.AuthorizationCode;
+            }
+            else
             {
                 throw new NotImplementedException();
-            }
+            }            
 
             _paymentsRepository.AddOrUpdate(payment);
 
