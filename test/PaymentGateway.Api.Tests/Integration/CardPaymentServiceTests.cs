@@ -48,12 +48,14 @@ namespace PaymentGateway.Api.Tests.Integration
 
             var cardPayment = new CardPayment
             {
+                Id = Guid.NewGuid(),
                 CardNumber = 2222405343248877,
                 Cvv = "123",
                 ExpiryMonth = 4,
                 ExpiryYear = 2025,
                 Currency = "GBP",
                 Amount = 100,
+                Status = PaymentStatus.Requested,
             };
             InMemoryPaymentsRepository paymentsRepository = new InMemoryPaymentsRepository();
 

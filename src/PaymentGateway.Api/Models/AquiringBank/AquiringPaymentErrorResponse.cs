@@ -2,6 +2,6 @@
 {
     public class AquiringPaymentErrorResponse
     {
-        public string ErrorMessage { get; set; }
+        public required string ErrorMessage { get; set; }
     }
 }

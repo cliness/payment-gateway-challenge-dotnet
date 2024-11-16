@@ -1,4 +1,5 @@
-﻿using PaymentGateway.Api.Models.CardPayments;
+﻿using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Models.CardPayments;
 using PaymentGateway.Api.Repository;
 
 namespace PaymentGateway.Api.Tests.Unit.Repository
@@ -10,7 +11,17 @@ namespace PaymentGateway.Api.Tests.Unit.Repository
         {
             //Arrange
             Guid cardPaymentId = Guid.NewGuid();
-            var cardPayment = new CardPayment() { Id = cardPaymentId, Amount = 1000 };
+            var cardPayment = new CardPayment()
+            {
+                Id = cardPaymentId,
+                CardNumber = 2222405343248877,
+                Cvv = "123",
+                ExpiryMonth = 4,
+                ExpiryYear = 2025,
+                Currency = "GBP",
+                Amount = 100,
+                Status = PaymentStatus.Requested,
+            };
 
             var inMemoryPaymentRepository = new InMemoryPaymentsRepository();
 
@@ -19,8 +30,16 @@ namespace PaymentGateway.Api.Tests.Unit.Repository
             var foundCardPayment = inMemoryPaymentRepository.Get(cardPaymentId);
 
             //Assert
-            Assert.Equal(cardPaymentId, foundCardPayment?.Id);
-            Assert.Equal(1000, foundCardPayment?.Amount);
+            Assert.NotNull(foundCardPayment);
+            Assert.Equal(cardPaymentId, foundCardPayment.Id);
+            Assert.Equal(2222405343248877, foundCardPayment.CardNumber);
+            Assert.Equal(2025, foundCardPayment.ExpiryYear);
+            Assert.Equal(4, foundCardPayment.ExpiryMonth);
+
+            Assert.Equal(100, foundCardPayment.Amount);
+            Assert.Equal("GBP", foundCardPayment.Currency);
+
+            Assert.Equal(PaymentStatus.Requested, foundCardPayment.Status);
         }
         
         [Fact]
@@ -28,8 +47,28 @@ namespace PaymentGateway.Api.Tests.Unit.Repository
         {
             //Arrange
             Guid cardPaymentId = Guid.NewGuid();
-            var firstCardPayment = new CardPayment() { Id = cardPaymentId, Amount = 1000 };
-            var secondCardPayment = new CardPayment() { Id = cardPaymentId, Amount = 1123 };
+            var firstCardPayment = new CardPayment
+            {
+                Id = cardPaymentId,
+                CardNumber = 2222405343248877,
+                Cvv = "123",
+                ExpiryMonth = 4,
+                ExpiryYear = 2025,
+                Currency = "GBP",
+                Amount = 100,
+                Status = PaymentStatus.Requested,
+            };
+            var secondCardPayment = new CardPayment
+            {
+                Id = cardPaymentId,
+                CardNumber = 2222405343248877,
+                Cvv = "123",
+                ExpiryMonth = 4,
+                ExpiryYear = 2025,
+                Currency = "GBP",
+                Amount = 100,
+                Status = PaymentStatus.Authorized,
+            };
 
             var inMemoryPaymentRepository = new InMemoryPaymentsRepository();
 
@@ -40,7 +79,7 @@ namespace PaymentGateway.Api.Tests.Unit.Repository
 
             //Assert
             Assert.Equal(cardPaymentId, foundCardPayment?.Id);
-            Assert.Equal(1123, foundCardPayment?.Amount);
+            Assert.Equal(PaymentStatus.Authorized, foundCardPayment?.Status);
         }        
         
         [Fact]

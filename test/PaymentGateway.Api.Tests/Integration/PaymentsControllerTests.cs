@@ -77,11 +77,16 @@ public class PaymentsControllerTests
         var payment = new CardPayment
         {
             Id = Guid.NewGuid(),
-            ExpiryYear = 2023,
-            ExpiryMonth = 8,
-            Amount = 900,
-            CardNumber = 2345,
-            Currency = "GBP"
+
+            CardNumber = 2222405343248877,
+            Cvv = "123",
+            ExpiryYear = 2025,
+            ExpiryMonth = 4,
+
+            Amount = 100,            
+            Currency = "GBP",
+
+            Status = PaymentStatus.Authorized
         };
 
         var paymentsRepository = new InMemoryPaymentsRepository();
