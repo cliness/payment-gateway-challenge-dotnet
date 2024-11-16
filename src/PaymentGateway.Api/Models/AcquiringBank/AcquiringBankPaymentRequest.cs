@@ -1,6 +1,6 @@
-﻿namespace PaymentGateway.Api.Models.AquiringBank;
+﻿namespace PaymentGateway.Api.Models.AcquiringBank;
 
-public class AquiringBankPaymentRequest
+public class AcquiringBankPaymentRequest
 {
     public required long CardNumber { get; set; }
     public required string ExpiryDate { get; set; }

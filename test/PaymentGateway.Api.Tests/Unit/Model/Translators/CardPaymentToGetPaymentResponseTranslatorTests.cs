@@ -27,17 +27,17 @@ namespace PaymentGateway.Api.Tests.Unit.Model.Translators
             };
 
             //Act
-            var aquiringBankPaymentRequest = cardPayment.ToGetPaymentResponse();
+            var acquiringBankPaymentRequest = cardPayment.ToGetPaymentResponse();
 
             //Assert
-            Assert.Equal(8877, aquiringBankPaymentRequest.CardNumberLastFour);            
-            Assert.Equal(2025, aquiringBankPaymentRequest.ExpiryYear);
-            Assert.Equal(4, aquiringBankPaymentRequest.ExpiryMonth);
+            Assert.Equal(8877, acquiringBankPaymentRequest.CardNumberLastFour);            
+            Assert.Equal(2025, acquiringBankPaymentRequest.ExpiryYear);
+            Assert.Equal(4, acquiringBankPaymentRequest.ExpiryMonth);
 
-            Assert.Equal(100, aquiringBankPaymentRequest.Amount);
-            Assert.Equal("GBP", aquiringBankPaymentRequest.Currency);
+            Assert.Equal(100, acquiringBankPaymentRequest.Amount);
+            Assert.Equal("GBP", acquiringBankPaymentRequest.Currency);
 
-            Assert.Equal(PaymentStatus.Authorized, aquiringBankPaymentRequest.Status);
+            Assert.Equal(PaymentStatus.Authorized, acquiringBankPaymentRequest.Status);
         }
     }
 }

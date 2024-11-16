@@ -27,7 +27,7 @@ public class PaymentsControllerTests
             .AddJsonFile("appsettings.test.json")
             .Build();
 
-        var acquiringPayment = config.GetRequiredSection(nameof(AquiringPaymentSettings)).Get<AquiringPaymentSettings>();
+        var acquiringPayment = config.GetRequiredSection(nameof(AcquiringPaymentSettings)).Get<AcquiringPaymentSettings>();
         if (acquiringPayment?.ServiceEndpoint == null)
         {
             throw new Exception("Acquiring Service Endpoint not defined");
@@ -56,8 +56,8 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddSingleton<IAquiringBankClient, AquiringBankClient>()
-                .AddHttpClient(nameof(AquiringBankClient), client =>
+                .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
+                .AddHttpClient(nameof(AcquiringBankClient), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
                 })))
@@ -100,8 +100,8 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddSingleton<IAquiringBankClient, AquiringBankClient>()
-                .AddHttpClient(nameof(AquiringBankClient), client =>
+                .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
+                .AddHttpClient(nameof(AcquiringBankClient), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
                 })))
@@ -125,8 +125,8 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>()
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddSingleton<IAquiringBankClient, AquiringBankClient>()
-                .AddHttpClient(nameof(AquiringBankClient), client =>
+                .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
+                .AddHttpClient(nameof(AcquiringBankClient), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
                 })))

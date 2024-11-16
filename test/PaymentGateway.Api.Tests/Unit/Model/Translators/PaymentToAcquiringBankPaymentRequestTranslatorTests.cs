@@ -3,10 +3,10 @@ using PaymentGateway.Api.Models.Translators;
 
 namespace PaymentGateway.Api.Tests.Unit.Model.Translators
 {
-    public class PaymentToAquiringBankPaymentRequestTranslatorTests
+    public class PaymentToAcquiringBankPaymentRequestTranslatorTests
     {
         [Fact]
-        public void ToAquiringBankPaymentRequest_CardPayment_TranslatesToRequest()
+        public void ToAcquiringBankPaymentRequest_CardPayment_TranslatesToRequest()
         {
             var cardPayment = new CardPayment
             {
@@ -24,13 +24,13 @@ namespace PaymentGateway.Api.Tests.Unit.Model.Translators
                 Status = Models.PaymentStatus.Authorized,
             };
 
-            var aquiringBankPaymentRequest = cardPayment.ToAquiringBankPaymentRequest();
+            var acquiringBankPaymentRequest = cardPayment.ToAcquiringBankPaymentRequest();
             
-            Assert.Equal(2222405343248112, aquiringBankPaymentRequest.CardNumber);
-            Assert.Equal("04/2026", aquiringBankPaymentRequest.ExpiryDate);
-            Assert.Equal("123", aquiringBankPaymentRequest.Cvv);
-            Assert.Equal(100, aquiringBankPaymentRequest.Amount);
-            Assert.Equal("GBP", aquiringBankPaymentRequest.Currency);            
+            Assert.Equal(2222405343248112, acquiringBankPaymentRequest.CardNumber);
+            Assert.Equal("04/2026", acquiringBankPaymentRequest.ExpiryDate);
+            Assert.Equal("123", acquiringBankPaymentRequest.Cvv);
+            Assert.Equal(100, acquiringBankPaymentRequest.Amount);
+            Assert.Equal("GBP", acquiringBankPaymentRequest.Currency);            
         }
     }
 }

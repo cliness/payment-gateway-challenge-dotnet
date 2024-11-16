@@ -1,6 +1,6 @@
-﻿namespace PaymentGateway.Api.Models.AquiringBank
+﻿namespace PaymentGateway.Api.Models.AcquiringBank
 {
-    public class AquiringBankAuthorisation
+    public class AcquiringBankAuthorisation
     {
         public required Guid? AuthorizationCode { get; set; }
         public required bool Authorized { get; set; }

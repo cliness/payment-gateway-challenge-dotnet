@@ -1,8 +1,4 @@
-﻿using System.Net;
-using System.Text.Json;
-
-using PaymentGateway.Api.Infrastructure;
-using PaymentGateway.Api.Models.AquiringBank;
+﻿using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Models.CardPayments;
 using PaymentGateway.Api.Models.Translators;
 using PaymentGateway.Api.Repository;
@@ -11,10 +7,10 @@ namespace PaymentGateway.Api.Services
 {
     public class CardPaymentService : ICardPaymentService
     {
-        private readonly IAquiringBankClient _paymentGatewayClient;
+        private readonly IAcquiringBankClient _paymentGatewayClient;
         private readonly IPaymentsRepository _paymentsRepository;
 
-        public CardPaymentService(IAquiringBankClient paymentGatewayClient, IPaymentsRepository paymentsRepository)
+        public CardPaymentService(IAcquiringBankClient paymentGatewayClient, IPaymentsRepository paymentsRepository)
         {
             _paymentGatewayClient = paymentGatewayClient;
             _paymentsRepository = paymentsRepository;
@@ -24,14 +20,14 @@ namespace PaymentGateway.Api.Services
         {
             _paymentsRepository.AddOrUpdate(payment);
 
-            var aquiringBankPaymentRequest = payment.ToAquiringBankPaymentRequest();
+            var acquiringBankPaymentRequest = payment.ToAcquiringBankPaymentRequest();
 
-            var aquiringBankPaymentResponse = await _paymentGatewayClient.PostPayment(aquiringBankPaymentRequest);
+            var acquiringBankPaymentResponse = await _paymentGatewayClient.PostPayment(acquiringBankPaymentRequest);
 
-            if (aquiringBankPaymentResponse != null && aquiringBankPaymentResponse.Authorized)
+            if (acquiringBankPaymentResponse != null && acquiringBankPaymentResponse.Authorized)
             {
                 payment.Status = Models.PaymentStatus.Authorized;
-                payment.AuthorizationCode = aquiringBankPaymentResponse.AuthorizationCode;
+                payment.AuthorizationCode = acquiringBankPaymentResponse.AuthorizationCode;
             }
             else
             {

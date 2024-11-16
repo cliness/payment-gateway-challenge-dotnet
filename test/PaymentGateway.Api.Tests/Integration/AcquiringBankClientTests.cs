@@ -2,7 +2,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-using PaymentGateway.Api.Models.AquiringBank;
+using PaymentGateway.Api.Models.AcquiringBank;
 using PaymentGateway.Api.Tests.Configuration;
 using PaymentGateway.Api.Infrastructure;
 using Moq;
@@ -10,17 +10,17 @@ using Moq;
 namespace PaymentGateway.Api.Tests.Integration
 {
     [Trait("Category", "ThirdPartyAPI")]
-    public class AquiringBankClientTests
+    public class AcquiringBankClientTests
     {
         private readonly Uri _acquiringPaymentEndpoint;
 
-        public AquiringBankClientTests()
+        public AcquiringBankClientTests()
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.test.json")
                 .Build();
 
-            var acquiringPayment = config.GetRequiredSection(nameof(AquiringPaymentSettings)).Get<AquiringPaymentSettings>();
+            var acquiringPayment = config.GetRequiredSection(nameof(AcquiringPaymentSettings)).Get<AcquiringPaymentSettings>();
             if(acquiringPayment?.ServiceEndpoint == null)
             {
                 throw new Exception("Acquiring Service Endpoint not defined");
@@ -43,7 +43,7 @@ namespace PaymentGateway.Api.Tests.Integration
                 WriteIndented = true
             };
 
-            var paymentRequest = new AquiringBankPaymentRequest
+            var paymentRequest = new AcquiringBankPaymentRequest
             {
                 CardNumber = 2222405343248877,
                 Cvv = "123",
@@ -54,10 +54,10 @@ namespace PaymentGateway.Api.Tests.Integration
             var httpClientFactory = new Mock<IHttpClientFactory>();
             httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-            var aquiringBankClient = new AquiringBankClient(httpClientFactory.Object);
+            var acquiringBankClient = new AcquiringBankClient(httpClientFactory.Object);
 
             //Act
-            var paymentResponse = await aquiringBankClient.PostPayment(paymentRequest);
+            var paymentResponse = await acquiringBankClient.PostPayment(paymentRequest);
 
             //Assert
             Assert.NotNull(paymentResponse);
@@ -79,7 +79,7 @@ namespace PaymentGateway.Api.Tests.Integration
                 WriteIndented = true
             };
 
-            var paymentRequest = new AquiringBankPaymentRequest
+            var paymentRequest = new AcquiringBankPaymentRequest
             {
                 CardNumber = 2222405343248112,
                 ExpiryDate = "01/2026",
@@ -91,10 +91,10 @@ namespace PaymentGateway.Api.Tests.Integration
             var httpClientFactory = new Mock<IHttpClientFactory>();
             httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-            var aquiringBankClient = new AquiringBankClient(httpClientFactory.Object);
+            var acquiringBankClient = new AcquiringBankClient(httpClientFactory.Object);
 
             //Act
-            var paymentResponse = await aquiringBankClient.PostPayment(paymentRequest);
+            var paymentResponse = await acquiringBankClient.PostPayment(paymentRequest);
 
             //Assert
             Assert.NotNull(paymentResponse);
@@ -122,7 +122,7 @@ namespace PaymentGateway.Api.Tests.Integration
                 WriteIndented = true
             };
 
-            var paymentRequest = new AquiringBankPaymentRequest
+            var paymentRequest = new AcquiringBankPaymentRequest
             {
                 CardNumber = 1111111111111111,
                 ExpiryDate = "01/2026",
@@ -134,10 +134,10 @@ namespace PaymentGateway.Api.Tests.Integration
             var httpClientFactory = new Mock<IHttpClientFactory>();
             httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-            var aquiringBankClient = new AquiringBankClient(httpClientFactory.Object);
+            var acquiringBankClient = new AcquiringBankClient(httpClientFactory.Object);
 
             //Act
-            var paymentResponse = await aquiringBankClient.PostPayment(paymentRequest);
+            var paymentResponse = await acquiringBankClient.PostPayment(paymentRequest);
 
             //Assert
             Assert.NotNull(paymentResponse);

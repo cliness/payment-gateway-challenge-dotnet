@@ -1,6 +1,6 @@
 ﻿namespace PaymentGateway.Api.Tests.Configuration
 {
-    public class AquiringPaymentSettings
+    public class AcquiringPaymentSettings
     {
         public Uri? ServiceEndpoint { get; set; }
     }

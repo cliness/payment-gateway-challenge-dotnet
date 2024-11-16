@@ -1,13 +1,13 @@
-﻿using PaymentGateway.Api.Models.AquiringBank;
+﻿using PaymentGateway.Api.Models.AcquiringBank;
 using PaymentGateway.Api.Models.CardPayments;
 
 namespace PaymentGateway.Api.Models.Translators
 {
-    public static class PaymentToAquiringBankPaymentRequestTranslator
+    public static class PaymentToAcquiringBankPaymentRequestTranslator
     {
-        public static AquiringBankPaymentRequest ToAquiringBankPaymentRequest(this CardPayment payment)
+        public static AcquiringBankPaymentRequest ToAcquiringBankPaymentRequest(this CardPayment payment)
         {
-            return new AquiringBankPaymentRequest
+            return new AcquiringBankPaymentRequest
             {
                 CardNumber = payment.CardNumber,
                 Cvv = payment.Cvv,

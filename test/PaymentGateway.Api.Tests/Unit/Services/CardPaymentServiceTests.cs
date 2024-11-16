@@ -2,7 +2,7 @@
 
 using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Models;
-using PaymentGateway.Api.Models.AquiringBank;
+using PaymentGateway.Api.Models.AcquiringBank;
 using PaymentGateway.Api.Models.CardPayments;
 using PaymentGateway.Api.Repository;
 using PaymentGateway.Api.Services;
@@ -28,9 +28,9 @@ namespace PaymentGateway.Api.Tests.Unit.Services
             };
             InMemoryPaymentsRepository paymentsRepository = new InMemoryPaymentsRepository();
 
-            var bankPaymentResponse = new AquiringBankAuthorisation { AuthorizationCode = Guid.NewGuid(), Authorized = true };
-            var paymentGatewayClient = new Mock<IAquiringBankClient>();
-            paymentGatewayClient.Setup(client => client.PostPayment(It.IsAny<AquiringBankPaymentRequest>())).ReturnsAsync(bankPaymentResponse);
+            var bankPaymentResponse = new AcquiringBankAuthorisation { AuthorizationCode = Guid.NewGuid(), Authorized = true };
+            var paymentGatewayClient = new Mock<IAcquiringBankClient>();
+            paymentGatewayClient.Setup(client => client.PostPayment(It.IsAny<AcquiringBankPaymentRequest>())).ReturnsAsync(bankPaymentResponse);
 
             var cardPaymentService = new CardPaymentService(paymentGatewayClient.Object, paymentsRepository);
 

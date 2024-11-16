@@ -1,17 +1,17 @@
 ﻿using System.Net;
 using System.Text.Json;
 
-using PaymentGateway.Api.Models.AquiringBank;
+using PaymentGateway.Api.Models.AcquiringBank;
 
 namespace PaymentGateway.Api.Infrastructure
 {
-    public class AquiringBankClient : IAquiringBankClient
+    public class AcquiringBankClient : IAcquiringBankClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly JsonSerializerOptions _serializeOptions;
         private readonly JsonSerializerOptions _errorSerializeOptions;
 
-        public AquiringBankClient(IHttpClientFactory httpClientFactory)
+        public AcquiringBankClient(IHttpClientFactory httpClientFactory)
         {
 
             _httpClientFactory = httpClientFactory;
@@ -26,24 +26,24 @@ namespace PaymentGateway.Api.Infrastructure
             };
         }
 
-        public async Task<AquiringBankAuthorisation?> PostPayment(AquiringBankPaymentRequest paymentRequest)
+        public async Task<AcquiringBankAuthorisation?> PostPayment(AcquiringBankPaymentRequest paymentRequest)
         {
-            using var _httpClient = _httpClientFactory.CreateClient(nameof(AquiringBankClient));
+            using var _httpClient = _httpClientFactory.CreateClient(nameof(AcquiringBankClient));
             var response = await _httpClient.PostAsJsonAsync("payments", paymentRequest, _serializeOptions);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                var paymentResponse = await response.Content.ReadFromJsonAsync<AquiringBankPaymentResponse>(_serializeOptions);
+                var paymentResponse = await response.Content.ReadFromJsonAsync<AcquiringBankPaymentResponse>(_serializeOptions);
 
                 Guid? authorisationCode = Guid.TryParse(paymentResponse?.AuthorizationCode, out var parsedAuthCode) ? parsedAuthCode : null;
 
-                return new AquiringBankAuthorisation { AuthorizationCode = authorisationCode, Authorized = paymentResponse?.Authorized ?? false};
+                return new AcquiringBankAuthorisation { AuthorizationCode = authorisationCode, Authorized = paymentResponse?.Authorized ?? false};
             }
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                var errorResponse = await response.Content.ReadFromJsonAsync<AquiringPaymentErrorResponse>(_errorSerializeOptions);
+                var errorResponse = await response.Content.ReadFromJsonAsync<AcquiringPaymentErrorResponse>(_errorSerializeOptions);
 
-                return new AquiringBankAuthorisation {AuthorizationCode = null, Authorized = false, ErrorMessage = errorResponse?.ErrorMessage };
+                return new AcquiringBankAuthorisation {AuthorizationCode = null, Authorized = false, ErrorMessage = errorResponse?.ErrorMessage };
             }
             return null;
         }
