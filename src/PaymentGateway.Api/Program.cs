@@ -1,15 +1,33 @@
+using PaymentGateway.Api.Infrastructure;
+using PaymentGateway.Api.Repository;
 using PaymentGateway.Api.Services;
+using PaymentGateway.Api.Tests.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var config = builder.Configuration
+    .AddJsonFile("appsettings.json")
+    .Build();
+
 // Add services to the container.
+var acquiringPayment = config.GetRequiredSection(nameof(AcquiringPaymentSettings)).Get<AcquiringPaymentSettings>();
+if (acquiringPayment?.ServiceEndpoint == null)
+{
+    throw new Exception("Acquiring Service Endpoint not defined");
+}
+
+builder.Services.AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>();
+builder.Services.AddSingleton<ICardPaymentService, CardPaymentService>();
+builder.Services.AddSingleton<IAcquiringBankClient, AcquiringBankClient>();
+builder.Services.AddHttpClient(nameof(AcquiringBankClient), client =>
+{
+    client.BaseAddress = acquiringPayment.ServiceEndpoint;
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddSingleton<PaymentsRepository>();
 
 var app = builder.Build();
 
