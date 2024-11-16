@@ -10,6 +10,7 @@ using PaymentGateway.Api.Tests.Configuration;
 
 namespace PaymentGateway.Api.Tests.Integration
 {
+    [Trait("Category", "ThirdPartyAPI")]
     public class CardPaymentServiceTests
     {
         private readonly Uri _acquiringPaymentEndpoint;
