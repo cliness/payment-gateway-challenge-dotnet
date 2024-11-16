@@ -9,21 +9,41 @@ using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Models.Payments;
 using PaymentGateway.Api.Models.CardPayments;
 using PaymentGateway.Api.Repository;
+using PaymentGateway.Api.Services;
+using Microsoft.Extensions.Configuration;
+using PaymentGateway.Api.Tests.Configuration;
 
 namespace PaymentGateway.Api.Tests.Integration;
 
 public class PaymentsControllerTests
 {
+    private readonly Uri _acquiringPaymentEndpoint;
+
+    public PaymentsControllerTests()
+    {
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.test.json")
+            .Build();
+
+        var acquiringPayment = config.GetRequiredSection(AquiringPaymentSettings.Section).Get<AquiringPaymentSettings>();
+        if (acquiringPayment?.ServiceEndpoint == null)
+        {
+            throw new Exception("Acquiring Service Endpoint not defined");
+        }
+        _acquiringPaymentEndpoint = acquiringPayment.ServiceEndpoint;
+    }
+
     [Fact]
-    public async Task MakesAPaymentSuccessfully()
+    public async Task MakePayment_ValidCard_MakesAPaymentSuccessfully()
     {
         // Arrange
         var payment = new PostPaymentRequest
         {
-            ExpiryYear = 2030,
+            CardNumber = 2222405343248877,
+            Cvv = "123",
+            ExpiryYear = 2025,
             ExpiryMonth = 4,
-            Amount = 1000,
-            CardNumberLastFour = 3487,
+            Amount = 100,            
             Currency = "GBP"
         };
 
@@ -32,28 +52,33 @@ public class PaymentsControllerTests
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => ((ServiceCollection)services)
-                .AddSingleton(paymentsRepository)))
+                .AddSingleton<IPaymentsRepository>(paymentsRepository)
+                .AddSingleton<ICardPaymentService, CardPaymentService>()
+                .AddHttpClient<ICardPaymentService, CardPaymentService>(client =>
+                {
+                    client.BaseAddress = _acquiringPaymentEndpoint;
+                })))
             .CreateClient();
 
         // Act
-        var response = await client.PostAsJsonAsync($"/api/Payments/", payment);
-        var paymentResponse = await response.Content.ReadFromJsonAsync<PostPaymentResponse>();
+        var response = await client.PostAsJsonAsync($"/api/Payments/", payment);        
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var paymentResponse = await response.Content.ReadFromJsonAsync<PostPaymentResponse>();
         Assert.NotNull(paymentResponse);
         Assert.Equal(PaymentStatus.Authorized, paymentResponse.Status);
     }
 
     [Fact]
-    public async Task RetrievesAPaymentSuccessfully()
+    public async Task GetPayment_WithCardPayment_RetrievesAPaymentSuccessfully()
     {
         // Arrange
         var payment = new CardPayment
         {
             Id = Guid.NewGuid(),
             ExpiryYear = 2023,
-            ExpiryMonth =8,
+            ExpiryMonth = 8,
             Amount = 900,
             CardNumber = 2345,
             Currency = "GBP"
@@ -65,24 +90,37 @@ public class PaymentsControllerTests
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => ((ServiceCollection)services)
-                .AddSingleton(paymentsRepository)))
+                .AddSingleton<IPaymentsRepository>(paymentsRepository)
+                .AddSingleton<ICardPaymentService, CardPaymentService>()
+                .AddHttpClient<ICardPaymentService, CardPaymentService>(client =>
+                {
+                    client.BaseAddress = _acquiringPaymentEndpoint;
+                })))
             .CreateClient();
 
         // Act
-        var response = await client.GetAsync($"/api/Payments/{payment.Id}");
-        var paymentResponse = await response.Content.ReadFromJsonAsync<GetPaymentResponse>();
+        var response = await client.GetAsync($"/api/Payments/{payment.Id}");        
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var paymentResponse = await response.Content.ReadFromJsonAsync<GetPaymentResponse>();
         Assert.NotNull(paymentResponse);
     }
 
     [Fact]
-    public async Task Returns404IfPaymentNotFound()
+    public async Task GetPayment_WithoutCardPayment_Returns404IfPaymentNotFound()
     {
         // Arrange
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
-        var client = webApplicationFactory.CreateClient();
+        var client = webApplicationFactory.WithWebHostBuilder(builder =>
+            builder.ConfigureServices(services => ((ServiceCollection)services)
+                .AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>()
+                .AddSingleton<ICardPaymentService, CardPaymentService>()
+                .AddHttpClient<ICardPaymentService, CardPaymentService>(client =>
+                {
+                    client.BaseAddress = _acquiringPaymentEndpoint;
+                })))
+            .CreateClient();
 
         // Act
         var response = await client.GetAsync($"/api/Payments/{Guid.NewGuid()}");

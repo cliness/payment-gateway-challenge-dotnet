@@ -1,5 +1,4 @@
-﻿
-using System.Net;
+﻿using System.Net;
 using System.Text.Json;
 
 using PaymentGateway.Api.Models.AquiringBank;
@@ -9,31 +8,30 @@ using PaymentGateway.Api.Repository;
 
 namespace PaymentGateway.Api.Services
 {
-    public class CardPaymentService
+    public class CardPaymentService : ICardPaymentService
     {
         private readonly HttpClient _httpClient;
         private readonly IPaymentsRepository _paymentsRepository;
         private readonly JsonSerializerOptions _serializeOptions;
 
-        public CardPaymentService(IHttpClientFactory httpClientFactory, IPaymentsRepository paymentsRepository)
+        public CardPaymentService(HttpClient httpClient, IPaymentsRepository paymentsRepository)
         {
-            _httpClient = httpClientFactory.CreateClient("AquiringBankPayment");
+            _httpClient = httpClient;
             _paymentsRepository = paymentsRepository;
 
             _serializeOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-                WriteIndented = true
             };
         }
 
-        public async Task MakePayment(CardPayment payment)
+        public async Task<CardPayment> MakePayment(CardPayment payment)
         {
             _paymentsRepository.AddOrUpdate(payment);
 
-            var aquiringBankPayment = payment.ToAquiringBankPaymentRequest();
+            var aquiringBankPaymentRequest = payment.ToAquiringBankPaymentRequest();
 
-            var response = await _httpClient.PostAsJsonAsync("/payment", aquiringBankPayment, _serializeOptions);
+            var response = await _httpClient.PostAsJsonAsync("payments", aquiringBankPaymentRequest, _serializeOptions);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -43,9 +41,18 @@ namespace PaymentGateway.Api.Services
                     payment.Status = Models.PaymentStatus.Authorized;
                     payment.AuthorizationCode = acquringBankPaymentResponse.AuthorizationCode;
                 }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            } else
+            {
+                throw new NotImplementedException();
             }
 
             _paymentsRepository.AddOrUpdate(payment);
+
+            return payment;
         }
     }
 }

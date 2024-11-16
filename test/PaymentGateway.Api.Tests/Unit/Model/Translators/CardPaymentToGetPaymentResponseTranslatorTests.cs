@@ -9,26 +9,34 @@ namespace PaymentGateway.Api.Tests.Unit.Model.Translators
         [Fact]
         public void ToGetPaymentResponse_CardPayment_TranslatesToResponce()
         {
+            //Arrange
             var cardPayment = new CardPayment
             {
-                Amount = 10,
+                Id = Guid.NewGuid(),
+                
                 CardNumber = 2222405343248112,
-                AuthorizationCode = Guid.NewGuid().ToString(),
-                Currency = "GDP",
                 Cvv = "123",
                 ExpiryMonth = 4,
-                ExpiryYear = 2026,
-                Id = Guid.NewGuid(),
-                Status = Models.PaymentStatus.Authorized,
+                ExpiryYear = 2025,
+
+                Amount = 100,
+                Currency = "GBP",
+
+                AuthorizationCode = Guid.NewGuid().ToString(),
+                Status = PaymentStatus.Authorized,
             };
 
+            //Act
             var aquiringBankPaymentRequest = cardPayment.ToGetPaymentResponse();
 
-            Assert.Equal(10, aquiringBankPaymentRequest.Amount);
-            Assert.Equal(8112, aquiringBankPaymentRequest.CardNumberLastFour);
-            Assert.Equal("GDP", aquiringBankPaymentRequest.Currency);
-            Assert.Equal(2026, aquiringBankPaymentRequest.ExpiryYear);
+            //Assert
+            Assert.Equal(8112, aquiringBankPaymentRequest.CardNumberLastFour);            
+            Assert.Equal(2025, aquiringBankPaymentRequest.ExpiryYear);
             Assert.Equal(4, aquiringBankPaymentRequest.ExpiryMonth);
+
+            Assert.Equal(100, aquiringBankPaymentRequest.Amount);
+            Assert.Equal("GBP", aquiringBankPaymentRequest.Currency);
+
             Assert.Equal(PaymentStatus.Authorized, aquiringBankPaymentRequest.Status);
         }
     }

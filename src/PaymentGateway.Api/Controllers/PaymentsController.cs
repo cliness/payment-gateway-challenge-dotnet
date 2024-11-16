@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
+using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Models.Payments;
+using PaymentGateway.Api.Models.Translators;
 using PaymentGateway.Api.Repository;
+using PaymentGateway.Api.Services;
+using PaymentGateway.Api.Tests.Unit.Model.Translators;
 
 namespace PaymentGateway.Api.Controllers;
 
@@ -10,16 +13,24 @@ namespace PaymentGateway.Api.Controllers;
 [ApiController]
 public class PaymentsController : Controller
 {
-    private readonly InMemoryPaymentsRepository _paymentsRepository;
+    private readonly IPaymentsRepository _paymentsRepository;
+    private readonly ICardPaymentService _cardPaymentService;
 
-    public PaymentsController(InMemoryPaymentsRepository paymentsRepository)
+    public PaymentsController(IPaymentsRepository paymentsRepository, ICardPaymentService cardPaymentService)
     {
         _paymentsRepository = paymentsRepository;
+        _cardPaymentService = cardPaymentService;
     }
 
     [HttpPost()]
-    public ActionResult<PostPaymentResponse> MakePayment(PostPaymentRequest paymentRequest) {
-        return new OkObjectResult(paymentRequest);
+    public async Task<ActionResult<PostPaymentResponse>> MakePayment(PostPaymentRequest paymentRequest) {
+
+        var cardPayment = paymentRequest.ToCardPayment(PaymentStatus.Requested, Guid.NewGuid());
+
+        var payment = await _cardPaymentService.MakePayment(cardPayment);
+
+        var paymentResponse = payment.ToPostPaymentResponse();
+        return new OkObjectResult(paymentResponse);
     }
 
     [HttpGet("{id:guid}")]

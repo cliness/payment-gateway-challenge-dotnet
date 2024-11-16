@@ -10,10 +10,10 @@ namespace PaymentGateway.Api.Models.Translators
             return new AquiringBankPaymentRequest
             {
                 CardNumber = payment.CardNumber,
-                Amount = payment.Amount,
-                Currency = payment.Currency,
                 Cvv = payment.Cvv,
                 ExpiryDate = $"{payment.ExpiryMonth:00}/{payment.ExpiryYear}",
+                Amount = payment.Amount,
+                Currency = payment.Currency,
             };
         }
     }

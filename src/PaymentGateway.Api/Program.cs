@@ -1,4 +1,6 @@
 using PaymentGateway.Api.Repository;
+using PaymentGateway.Api.Services;
+using PaymentGateway.Api.Tests.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +11,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<InMemoryPaymentsRepository>();
+var config = builder.Configuration
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+var acquiringPayment = config.GetRequiredSection(AquiringPaymentSettings.Section).Get<AquiringPaymentSettings>();
+if (acquiringPayment?.ServiceEndpoint == null)
+{
+    throw new Exception("Acquiring Service Endpoint not defined");
+}
+
+builder.Services.AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>();
+builder.Services.AddSingleton<ICardPaymentService, CardPaymentService>();
+builder.Services.AddHttpClient<ICardPaymentService, CardPaymentService>(client =>
+{
+    client.BaseAddress = acquiringPayment.ServiceEndpoint;
+});
 
 var app = builder.Build();
 

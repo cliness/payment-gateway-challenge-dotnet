@@ -12,7 +12,7 @@ namespace PaymentGateway.Api.Tests.Integration
     [Trait("Category", "ThirdPartyAPI")]
     public class AquiringBankPaymentApiTests
     {
-        private readonly Uri acquiringPaymentEndpoint;
+        private readonly Uri _acquiringPaymentEndpoint;
 
         public AquiringBankPaymentApiTests()
         {
@@ -25,14 +25,18 @@ namespace PaymentGateway.Api.Tests.Integration
             {
                 throw new Exception("Acquiring Service Endpoint not defined");
             }
-            acquiringPaymentEndpoint = acquiringPayment.ServiceEndpoint;
+            _acquiringPaymentEndpoint = acquiringPayment.ServiceEndpoint;
         }
 
         [Fact]
         public async Task Payment_AuthorisedCard_ReturnsAuthorisedPayment()
         {
             //Arrange
-            var httpClient = new HttpClient();
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = _acquiringPaymentEndpoint
+            };
+            
             var serializeOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
@@ -42,14 +46,14 @@ namespace PaymentGateway.Api.Tests.Integration
             var paymentRequest = new AquiringBankPaymentRequest
             {
                 CardNumber = 2222405343248877,
+                Cvv = "123",
                 ExpiryDate = "04/2025",
                 Currency = "GBP",
-                Amount = 100,
-                Cvv = "123"
+                Amount = 100,                
             };
 
             //Act
-            var httpResponse = await httpClient.PostAsJsonAsync(acquiringPaymentEndpoint, paymentRequest, serializeOptions);
+            var httpResponse = await httpClient.PostAsJsonAsync("payments", paymentRequest, serializeOptions);
 
             //Assert
             httpResponse.EnsureSuccessStatusCode();
@@ -65,7 +69,10 @@ namespace PaymentGateway.Api.Tests.Integration
         public async Task Payment_NotAuthorisedCard_ReturnsNotAuthorisedPayment()
         {
             //Arrange
-            var httpClient = new HttpClient();
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = _acquiringPaymentEndpoint
+            };
             var serializeOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
@@ -82,7 +89,7 @@ namespace PaymentGateway.Api.Tests.Integration
             };
 
             //Act
-            var httpResponse = await httpClient.PostAsJsonAsync(acquiringPaymentEndpoint, paymentRequest, serializeOptions);
+            var httpResponse = await httpClient.PostAsJsonAsync("payments", paymentRequest, serializeOptions);
 
             //Assert
             httpResponse.EnsureSuccessStatusCode();
@@ -98,7 +105,10 @@ namespace PaymentGateway.Api.Tests.Integration
         public async Task Payment_UnknownCard_ReturnsNotAuthorisedPayment()
         {
             //Arrange
-            var httpClient = new HttpClient();
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = _acquiringPaymentEndpoint
+            };
             var requestSerializeOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
@@ -121,7 +131,7 @@ namespace PaymentGateway.Api.Tests.Integration
             };
 
             //Act
-            var httpResponse = await httpClient.PostAsJsonAsync(acquiringPaymentEndpoint, paymentRequest, requestSerializeOptions);
+            var httpResponse = await httpClient.PostAsJsonAsync("payments", paymentRequest, requestSerializeOptions);
 
             //Assert
             Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
