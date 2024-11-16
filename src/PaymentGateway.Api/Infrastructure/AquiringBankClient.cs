@@ -1,7 +1,7 @@
 ﻿using System.Net;
+using System.Text.Json;
 
 using PaymentGateway.Api.Models.AquiringBank;
-using System.Text.Json;
 
 namespace PaymentGateway.Api.Infrastructure
 {
@@ -47,12 +47,5 @@ namespace PaymentGateway.Api.Infrastructure
             }
             return null;
         }
-    }
-
-    public class  AquiringBankAuthorisation
-    {
-        public required Guid? AuthorizationCode { get; set; }
-        public required bool Authorized { get; set; }
-        public string? ErrorMessage { get; set; }
     }
 }
