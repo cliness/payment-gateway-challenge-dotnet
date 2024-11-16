@@ -1,7 +1,7 @@
-using PaymentGateway.Api.Infrastructure;
-using PaymentGateway.Api.Repository;
-using PaymentGateway.Api.Services;
-using PaymentGateway.Api.Tests.Configuration;
+using PaymentGateway.Api.Domain.Services;
+using PaymentGateway.Api.Infrastructure.AcquiringBank;
+using PaymentGateway.Api.Infrastructure.Configuration;
+using PaymentGateway.Api.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
