@@ -41,6 +41,7 @@ public class PaymentsController : Controller
         {
             return NotFound();
         }
-        return new OkObjectResult(payment);
+        var paymentResponse = payment.ToGetPaymentResponse();
+        return new OkObjectResult(paymentResponse);
     }
 }

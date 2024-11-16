@@ -1,4 +1,5 @@
-﻿using PaymentGateway.Api.Models.CardPayments;
+﻿using PaymentGateway.Api.Masking;
+using PaymentGateway.Api.Models.CardPayments;
 using PaymentGateway.Api.Models.Payments;
 
 namespace PaymentGateway.Api.Tests.Unit.Model.Translators
@@ -11,7 +12,7 @@ namespace PaymentGateway.Api.Tests.Unit.Model.Translators
             {
                 Id = cardPayment.Id,
                 Status = cardPayment.Status,
-                CardNumberLastFour = (int)cardPayment.CardNumber % 1000,
+                CardNumberLastFour = cardPayment.CardNumber.ToLastFourDigits(),
                 ExpiryMonth = cardPayment.ExpiryMonth,
                 ExpiryYear = cardPayment.ExpiryYear,
                 Amount = cardPayment.Amount,

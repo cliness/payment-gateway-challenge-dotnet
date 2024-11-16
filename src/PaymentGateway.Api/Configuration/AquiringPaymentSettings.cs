@@ -2,8 +2,6 @@
 {
     public class AquiringPaymentSettings
     {
-        public const string Section = "AquiringPayment";
-
         public Uri? ServiceEndpoint { get; set; }
     }
 }

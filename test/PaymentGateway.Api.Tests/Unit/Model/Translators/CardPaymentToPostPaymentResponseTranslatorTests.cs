@@ -5,14 +5,15 @@ namespace PaymentGateway.Api.Tests.Unit.Model.Translators
 {
     public class CardPaymentToPostPaymentResponseTranslatorTests
     {
-        public void ToPostPaymentResponse()
+        [Fact]
+        public void ToPostPaymentResponse_CardPayment_TranslatesToResponse()
         {
             //Arrange
             var cardPayment = new CardPayment
             {
                 Id = Guid.NewGuid(),
 
-                CardNumber = 2222405343248112,
+                CardNumber = 2222405343248877,
                 Cvv = "123",
                 ExpiryMonth = 4,
                 ExpiryYear = 2025,
@@ -30,7 +31,7 @@ namespace PaymentGateway.Api.Tests.Unit.Model.Translators
             //Assert
             Assert.Equal(cardPayment.Id, postPaymentResponse.Id);
             
-            Assert.Equal(8112, postPaymentResponse.CardNumberLastFour);
+            Assert.Equal(8877, postPaymentResponse.CardNumberLastFour);
             
             Assert.Equal(2025, postPaymentResponse.ExpiryYear);
             Assert.Equal(4, postPaymentResponse.ExpiryMonth);

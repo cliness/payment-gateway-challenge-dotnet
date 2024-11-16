@@ -10,7 +10,7 @@ var config = builder.Configuration
     .Build();
 
 // Add services to the container.
-var acquiringPayment = config.GetRequiredSection(AquiringPaymentSettings.Section).Get<AquiringPaymentSettings>();
+var acquiringPayment = config.GetRequiredSection(nameof(AquiringPaymentSettings)).Get<AquiringPaymentSettings>();
 if (acquiringPayment?.ServiceEndpoint == null)
 {
     throw new Exception("Acquiring Service Endpoint not defined");
@@ -19,7 +19,7 @@ if (acquiringPayment?.ServiceEndpoint == null)
 builder.Services.AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>();
 builder.Services.AddSingleton<ICardPaymentService, CardPaymentService>();
 builder.Services.AddSingleton<IAquiringBankClient, AquiringBankClient>();
-builder.Services.AddHttpClient(nameof(CardPaymentService), client =>
+builder.Services.AddHttpClient(nameof(AquiringBankClient), client =>
 {
     client.BaseAddress = acquiringPayment.ServiceEndpoint;
 });
