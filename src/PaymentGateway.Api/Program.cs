@@ -1,3 +1,5 @@
+using Microsoft.OpenApi.Models;
+
 using System.Text.Json.Serialization;
 
 using PaymentGateway.Api.Domain.Services;
@@ -39,7 +41,12 @@ builder.Services.AddControllers()
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var filePath = Path.Combine(AppContext.BaseDirectory, "PaymentGateway.Api.xml");
+    options.IncludeXmlComments(filePath);
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Payment Gateway API", Description = "API for making and retrieving payments.", Version = "v1" });
+});
 
 var app = builder.Build();
 
