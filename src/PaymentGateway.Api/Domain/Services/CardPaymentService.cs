@@ -28,7 +28,6 @@ namespace PaymentGateway.Api.Domain.Services
             {
                 payment.Status = PaymentStatus.Rejected;
                 payment.AuthorizationCode = null;
-                payment.FailureReason = null;
                 return payment;
             }
 
@@ -38,14 +37,12 @@ namespace PaymentGateway.Api.Domain.Services
             if (acquiringBankPaymentResponse != null && acquiringBankPaymentResponse.Authorized)
             {
                 payment.Status = PaymentStatus.Authorized;
-                payment.AuthorizationCode = acquiringBankPaymentResponse.AuthorizationCode;
-                payment.FailureReason = null;
+                payment.AuthorizationCode = Guid.Parse(acquiringBankPaymentResponse.AuthorizationCode);
             }
             else
             {
                 payment.Status = PaymentStatus.Declined;
                 payment.AuthorizationCode = null;
-                payment.FailureReason = acquiringBankPaymentResponse?.ErrorMessage;
             }
 
             _paymentsRepository.AddOrUpdate(payment);

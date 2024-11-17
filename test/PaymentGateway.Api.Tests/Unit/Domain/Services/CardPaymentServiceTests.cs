@@ -28,7 +28,7 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
             };
             InMemoryPaymentsRepository paymentsRepository = new InMemoryPaymentsRepository();
 
-            var bankPaymentResponse = new AcquiringBankAuthorisation { AuthorizationCode = Guid.NewGuid(), Authorized = true };
+            var bankPaymentResponse = new AcquiringBankPaymentResponse { AuthorizationCode = Guid.NewGuid().ToString(), Authorized = true };
             var paymentGatewayClientMock = new Mock<IAcquiringBankClient>();
             paymentGatewayClientMock.Setup(client => client.PostPayment(It.IsAny<AcquiringBankPaymentRequest>())).ReturnsAsync(bankPaymentResponse);
 
@@ -72,7 +72,7 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
             };
             InMemoryPaymentsRepository paymentsRepository = new InMemoryPaymentsRepository();
 
-            var bankPaymentResponse = new AcquiringBankAuthorisation { AuthorizationCode = null, Authorized = false };
+            var bankPaymentResponse = new AcquiringBankPaymentResponse { AuthorizationCode = string.Empty, Authorized = false };
             var paymentGatewayClientMock = new Mock<IAcquiringBankClient>();
             paymentGatewayClientMock.Setup(client => client.PostPayment(It.IsAny<AcquiringBankPaymentRequest>())).ReturnsAsync(bankPaymentResponse);
 
@@ -131,7 +131,6 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
             Assert.NotNull(returnedCardPayment);
             Assert.Equal(PaymentStatus.Rejected, returnedCardPayment.Status);
             Assert.Null(returnedCardPayment.AuthorizationCode);
-            Assert.Null(returnedCardPayment.FailureReason);
 
             Assert.Equal(cardPayment.Id, returnedCardPayment.Id);
             Assert.Equal("11111111111111111111", returnedCardPayment.CardNumber);

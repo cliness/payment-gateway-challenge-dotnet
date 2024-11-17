@@ -13,6 +13,5 @@ namespace PaymentGateway.Api.Domain.CardPayments
         public required int Amount { get; set; }
         public required PaymentStatus Status { get; set; }
         public Guid? AuthorizationCode { get; set; }
-        public string? FailureReason { get; set; }
     }
 }
