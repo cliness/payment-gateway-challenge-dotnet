@@ -39,5 +39,32 @@ namespace PaymentGateway.Api.Tests.Unit.Infrastructure.Translators
 
             Assert.Equal(PaymentStatus.Authorized, acquiringBankPaymentRequest.Status);
         }
+        
+        [Fact]
+        public void ToGetPaymentResponse_InvalidCardNumber_TranslatesToResponce()
+        {
+            //Arrange
+            var cardPayment = new CardPayment
+            {
+                Id = Guid.NewGuid(),
+
+                CardNumber = "22",
+                Cvv = "123",
+                ExpiryMonth = 4,
+                ExpiryYear = 2025,
+
+                Amount = 100,
+                Currency = "GBP",
+
+                AuthorizationCode = Guid.NewGuid(),
+                Status = PaymentStatus.Authorized,
+            };
+
+            //Act
+            var acquiringBankPaymentRequest = cardPayment.ToGetPaymentResponse();
+
+            //Assert
+            Assert.Equal("22", acquiringBankPaymentRequest.CardNumberLastFour);
+        }
     }
 }

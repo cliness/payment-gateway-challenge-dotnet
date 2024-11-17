@@ -10,7 +10,7 @@ namespace PaymentGateway.Api.Infrastructure.Translators
             return new GetPaymentResponse
             {
                 Id = payment.Id,
-                CardNumberLastFour = payment.CardNumber.Substring(payment.CardNumber.Length - 4, 4),
+                CardNumberLastFour = payment.CardNumber.Length > 4 ? payment.CardNumber.Substring(payment.CardNumber.Length - 4, 4) : payment.CardNumber,
                 Amount = payment.Amount,
                 Currency = payment.Currency,
                 ExpiryMonth = payment.ExpiryMonth,
