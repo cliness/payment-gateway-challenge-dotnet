@@ -1,4 +1,5 @@
-﻿using PaymentGateway.Api.Domain.CardPayments;
+﻿
+using PaymentGateway.Api.Domain.CardPayments;
 using PaymentGateway.Api.Domain.Models;
 using PaymentGateway.Api.Infrastructure.AcquiringBank;
 using PaymentGateway.Api.Infrastructure.Repository;
@@ -10,29 +11,41 @@ namespace PaymentGateway.Api.Domain.Services
     {
         private readonly IAcquiringBankClient _paymentGatewayClient;
         private readonly IPaymentsRepository _paymentsRepository;
+        private readonly IPaymentValidatorService _paymentValidatorService;
 
-        public CardPaymentService(IAcquiringBankClient paymentGatewayClient, IPaymentsRepository paymentsRepository)
+        public CardPaymentService(IAcquiringBankClient paymentGatewayClient, IPaymentsRepository paymentsRepository, IPaymentValidatorService paymentValidatorService)
         {
             _paymentGatewayClient = paymentGatewayClient;
             _paymentsRepository = paymentsRepository;
+            _paymentValidatorService = paymentValidatorService;
         }
 
         public async Task<CardPayment> MakePayment(CardPayment payment)
         {
             _paymentsRepository.AddOrUpdate(payment);
 
-            var acquiringBankPaymentRequest = payment.ToAcquiringBankPaymentRequest();
+            if (_paymentValidatorService.IsNotValid(payment))
+            {
+                payment.Status = PaymentStatus.Rejected;
+                payment.AuthorizationCode = null;
+                payment.FailureReason = null;
+                return payment;
+            }
 
+            var acquiringBankPaymentRequest = payment.ToAcquiringBankPaymentRequest();
             var acquiringBankPaymentResponse = await _paymentGatewayClient.PostPayment(acquiringBankPaymentRequest);
 
             if (acquiringBankPaymentResponse != null && acquiringBankPaymentResponse.Authorized)
             {
                 payment.Status = PaymentStatus.Authorized;
                 payment.AuthorizationCode = acquiringBankPaymentResponse.AuthorizationCode;
+                payment.FailureReason = null;
             }
             else
             {
-                throw new NotImplementedException();
+                payment.Status = PaymentStatus.Declined;
+                payment.AuthorizationCode = null;
+                payment.FailureReason = acquiringBankPaymentResponse?.ErrorMessage;
             }
 
             _paymentsRepository.AddOrUpdate(payment);

@@ -1,6 +1,5 @@
 ﻿using PaymentGateway.Api.Api.Models;
 using PaymentGateway.Api.Domain.CardPayments;
-using PaymentGateway.Api.Infrastructure.Masking;
 
 namespace PaymentGateway.Api.Infrastructure.Translators
 {
@@ -11,7 +10,7 @@ namespace PaymentGateway.Api.Infrastructure.Translators
             return new GetPaymentResponse
             {
                 Id = payment.Id,
-                CardNumberLastFour = payment.CardNumber.ToLastFourDigits(),
+                CardNumberLastFour = payment.CardNumber.Substring(payment.CardNumber.Length - 4, 4),
                 Amount = payment.Amount,
                 Currency = payment.Currency,
                 ExpiryMonth = payment.ExpiryMonth,

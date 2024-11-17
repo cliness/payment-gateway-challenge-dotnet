@@ -14,7 +14,7 @@ namespace PaymentGateway.Api.Tests.Unit.Infrastructure.Translators
             {
                 Id = Guid.NewGuid(),
 
-                CardNumber = 2222405343248877,
+                CardNumber = "2222405343248877",
                 Cvv = "123",
                 ExpiryMonth = 4,
                 ExpiryYear = 2025,
@@ -30,7 +30,7 @@ namespace PaymentGateway.Api.Tests.Unit.Infrastructure.Translators
             var acquiringBankPaymentRequest = cardPayment.ToGetPaymentResponse();
 
             //Assert
-            Assert.Equal(8877, acquiringBankPaymentRequest.CardNumberLastFour);
+            Assert.Equal("8877", acquiringBankPaymentRequest.CardNumberLastFour);
             Assert.Equal(2025, acquiringBankPaymentRequest.ExpiryYear);
             Assert.Equal(4, acquiringBankPaymentRequest.ExpiryMonth);
 

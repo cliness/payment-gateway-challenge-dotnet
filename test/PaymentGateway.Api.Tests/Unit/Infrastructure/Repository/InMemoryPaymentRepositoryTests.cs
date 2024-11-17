@@ -14,7 +14,7 @@ namespace PaymentGateway.Api.Tests.Unit.Infrastructure.Repository
             var cardPayment = new CardPayment()
             {
                 Id = cardPaymentId,
-                CardNumber = 2222405343248877,
+                CardNumber = "2222405343248877",
                 Cvv = "123",
                 ExpiryMonth = 4,
                 ExpiryYear = 2025,
@@ -32,7 +32,7 @@ namespace PaymentGateway.Api.Tests.Unit.Infrastructure.Repository
             //Assert
             Assert.NotNull(foundCardPayment);
             Assert.Equal(cardPaymentId, foundCardPayment.Id);
-            Assert.Equal(2222405343248877, foundCardPayment.CardNumber);
+            Assert.Equal("2222405343248877", foundCardPayment.CardNumber);
             Assert.Equal(2025, foundCardPayment.ExpiryYear);
             Assert.Equal(4, foundCardPayment.ExpiryMonth);
 
@@ -50,7 +50,7 @@ namespace PaymentGateway.Api.Tests.Unit.Infrastructure.Repository
             var firstCardPayment = new CardPayment
             {
                 Id = cardPaymentId,
-                CardNumber = 2222405343248877,
+                CardNumber = "2222405343248877",
                 Cvv = "123",
                 ExpiryMonth = 4,
                 ExpiryYear = 2025,
@@ -61,7 +61,7 @@ namespace PaymentGateway.Api.Tests.Unit.Infrastructure.Repository
             var secondCardPayment = new CardPayment
             {
                 Id = cardPaymentId,
-                CardNumber = 2222405343248877,
+                CardNumber = "2222405343248877",
                 Cvv = "123",
                 ExpiryMonth = 4,
                 ExpiryYear = 2025,

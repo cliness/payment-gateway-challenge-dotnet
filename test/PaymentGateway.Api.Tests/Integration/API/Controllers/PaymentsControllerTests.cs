@@ -12,6 +12,8 @@ using PaymentGateway.Api.Infrastructure.Repository;
 using PaymentGateway.Api.Domain.Models;
 using PaymentGateway.Api.Infrastructure.Configuration;
 using PaymentGateway.Api.Domain.CardPayments;
+using PaymentGateway.Api.Infrastructure.Providers;
+using Moq;
 
 namespace PaymentGateway.Api.Tests.Integration.Api.Controllers;
 
@@ -40,7 +42,7 @@ public class PaymentsControllerTests
         // Arrange
         var payment = new PostPaymentRequest
         {
-            CardNumber = 2222405343248877,
+            CardNumber = "2222405343248877",
             Cvv = "123",
             ExpiryYear = 2025,
             ExpiryMonth = 4,
@@ -50,11 +52,16 @@ public class PaymentsControllerTests
 
         var paymentsRepository = new InMemoryPaymentsRepository();
 
+        var dateProviderMock = new Mock<IDateProvider>();
+        dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
+
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
+                .AddSingleton<IPaymentValidatorService, PaymentValidatorService>()
+                .AddSingleton(dateProviderMock.Object)
                 .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
                 .AddHttpClient(nameof(AcquiringBankClient), client =>
                 {
@@ -80,7 +87,7 @@ public class PaymentsControllerTests
         {
             Id = Guid.NewGuid(),
 
-            CardNumber = 2222405343248877,
+            CardNumber = "2222405343248877",
             Cvv = "123",
             ExpiryYear = 2025,
             ExpiryMonth = 4,
@@ -94,11 +101,16 @@ public class PaymentsControllerTests
         var paymentsRepository = new InMemoryPaymentsRepository();
         paymentsRepository.AddOrUpdate(payment);
 
+        var dateProviderMock = new Mock<IDateProvider>();
+        dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
+
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
+                .AddSingleton<IPaymentValidatorService, PaymentValidatorService>()
+                .AddSingleton(dateProviderMock.Object)
                 .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
                 .AddHttpClient(nameof(AcquiringBankClient), client =>
                 {

@@ -46,7 +46,7 @@ namespace PaymentGateway.Api.Tests.Integration.Infrastructure.Clients
 
             var paymentRequest = new AcquiringBankPaymentRequest
             {
-                CardNumber = 2222405343248877,
+                CardNumber = "2222405343248877",
                 Cvv = "123",
                 ExpiryDate = "04/2025",
                 Currency = "GBP",
@@ -82,7 +82,7 @@ namespace PaymentGateway.Api.Tests.Integration.Infrastructure.Clients
 
             var paymentRequest = new AcquiringBankPaymentRequest
             {
-                CardNumber = 2222405343248112,
+                CardNumber = "2222405343248112",
                 ExpiryDate = "01/2026",
                 Currency = "USD",
                 Amount = 60000,
@@ -125,7 +125,7 @@ namespace PaymentGateway.Api.Tests.Integration.Infrastructure.Clients
 
             var paymentRequest = new AcquiringBankPaymentRequest
             {
-                CardNumber = 1111111111111111,
+                CardNumber = "1111111111111111",
                 ExpiryDate = "01/2026",
                 Currency = "USD",
                 Amount = 60000,
