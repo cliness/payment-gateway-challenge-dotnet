@@ -24,7 +24,6 @@ public class PaymentsController : Controller
     [HttpPost()]
     public async Task<ActionResult<PostPaymentResponse>> MakePayment(PostPaymentRequest paymentRequest)
     {
-
         var cardPayment = paymentRequest.ToCardPayment(PaymentStatus.Requested, Guid.NewGuid());
 
         var payment = await _cardPaymentService.MakePayment(cardPayment);

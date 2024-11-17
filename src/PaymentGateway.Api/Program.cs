@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 using PaymentGateway.Api.Domain.Services;
 using PaymentGateway.Api.Infrastructure.AcquiringBank;
 using PaymentGateway.Api.Infrastructure.Configuration;
@@ -29,7 +31,12 @@ builder.Services.AddHttpClient(nameof(AcquiringBankClient), client =>
     client.BaseAddress = acquiringPayment.ServiceEndpoint;
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
