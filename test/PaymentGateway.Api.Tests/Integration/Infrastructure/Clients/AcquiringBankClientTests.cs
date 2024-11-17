@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Json;
-using System.Net;
-using System;
+﻿using System.Net;
 using System.Text.Json;
 
 using Microsoft.Extensions.Configuration;
