@@ -21,7 +21,7 @@ namespace PaymentGateway.Api.Tests.Integration.Infrastructure.Clients
                 .AddJsonFile("appsettings.test.json")
                 .Build();
 
-            var acquiringPayment = config.GetRequiredSection(nameof(AcquiringPaymentSettings)).Get<AcquiringPaymentSettings>();
+            var acquiringPayment = config.GetRequiredSection(nameof(AcquiringBankPaymentSettings)).Get<AcquiringBankPaymentSettings>();
             if (acquiringPayment?.ServiceEndpoint == null)
             {
                 throw new Exception("Acquiring Service Endpoint not defined");

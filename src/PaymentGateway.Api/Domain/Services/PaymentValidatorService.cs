@@ -6,10 +6,12 @@ namespace PaymentGateway.Api.Domain.Services
     public class PaymentValidatorService : IPaymentValidatorService
     {
         private readonly IDateProvider _dateProvider;
+        private readonly string[] _validCurrencyCodes;
 
-        public PaymentValidatorService(IDateProvider dateProvider)
+        public PaymentValidatorService(IDateProvider dateProvider, string[] validCurrencyCodes)
         {
             _dateProvider = dateProvider;
+            _validCurrencyCodes = validCurrencyCodes;
         }
 
         public bool IsNotValid(CardPayment payment)
@@ -24,8 +26,7 @@ namespace PaymentGateway.Api.Domain.Services
 
             isCardPaymentValid &= payment.Amount > 0;
 
-            var validCurrencyCodes = new HashSet<string>() { "GBP", "USD", "EUR" };
-            isCardPaymentValid &= validCurrencyCodes.Contains(payment.Currency);
+            isCardPaymentValid &= _validCurrencyCodes.Contains(payment.Currency);
 
             return !isCardPaymentValid;
         }

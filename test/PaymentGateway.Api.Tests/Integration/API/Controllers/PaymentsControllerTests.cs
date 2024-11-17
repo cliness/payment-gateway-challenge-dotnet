@@ -21,6 +21,7 @@ namespace PaymentGateway.Api.Tests.Integration.Api.Controllers;
 public class PaymentsControllerTests
 {
     private readonly Uri _acquiringPaymentEndpoint;
+    private readonly string[] _validCurrencyCodes;
 
     public PaymentsControllerTests()
     {
@@ -28,12 +29,19 @@ public class PaymentsControllerTests
             .AddJsonFile("appsettings.test.json")
             .Build();
 
-        var acquiringPayment = config.GetRequiredSection(nameof(AcquiringPaymentSettings)).Get<AcquiringPaymentSettings>();
+        var acquiringPayment = config.GetRequiredSection(nameof(AcquiringBankPaymentSettings)).Get<AcquiringBankPaymentSettings>();
         if (acquiringPayment?.ServiceEndpoint == null)
         {
             throw new Exception("Acquiring Service Endpoint not defined");
         }
         _acquiringPaymentEndpoint = acquiringPayment.ServiceEndpoint;
+
+        var paymentGatewaySettings = config.GetRequiredSection(nameof(PaymentGatewaySettings)).Get<PaymentGatewaySettings>();
+        if (paymentGatewaySettings == null || !paymentGatewaySettings.ValidCurrencyCodes.Any())
+        {
+            throw new Exception("Payment Gateway Valid Currency Codes not defined");
+        }
+        _validCurrencyCodes = paymentGatewaySettings.ValidCurrencyCodes;
     }
 
     [Fact]
@@ -60,7 +68,7 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddSingleton<IPaymentValidatorService, PaymentValidatorService>()
+                .AddSingleton<IPaymentValidatorService>(services => new PaymentValidatorService(services.GetRequiredService<IDateProvider>(), _validCurrencyCodes))
                 .AddSingleton(dateProviderMock.Object)
                 .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
                 .AddHttpClient(nameof(AcquiringBankClient), client =>
@@ -109,7 +117,7 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
-                .AddSingleton<IPaymentValidatorService, PaymentValidatorService>()
+                .AddSingleton<IPaymentValidatorService>(services => new PaymentValidatorService(services.GetRequiredService<IDateProvider>(), _validCurrencyCodes))
                 .AddSingleton(dateProviderMock.Object)
                 .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
                 .AddHttpClient(nameof(AcquiringBankClient), client =>
@@ -136,6 +144,8 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>()
                 .AddSingleton<ICardPaymentService, CardPaymentService>()
+                .AddSingleton<IPaymentValidatorService>(services => new PaymentValidatorService(services.GetRequiredService<IDateProvider>(), _validCurrencyCodes))
+                .AddSingleton(new Mock<IDateProvider>().Object)
                 .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
                 .AddHttpClient(nameof(AcquiringBankClient), client =>
                 {

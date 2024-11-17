@@ -25,10 +25,12 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
                 Status = PaymentStatus.Requested,
             };
 
+            var validCurrencyCodes = new[] { "USD", "GBP", "EUR" };
+
             var dateProviderMock = new Mock<IDateProvider>();
             dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
 
-            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object);
+            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object, validCurrencyCodes);
 
             //Act
             var result = paymentValidatorService.IsNotValid(cardPayment);
@@ -56,10 +58,12 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
                 Status = PaymentStatus.Requested,
             };
 
+            var validCurrencyCodes = new[] { "USD", "GBP", "EUR" };
+
             var dateProviderMock = new Mock<IDateProvider>();
             dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
 
-            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object);
+            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object, validCurrencyCodes);
 
             //Act
             var result = paymentValidatorService.IsNotValid(cardPayment);
@@ -87,10 +91,12 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
                 Status = PaymentStatus.Requested,
             };
 
+            var validCurrencyCodes = new[] { "USD", "GBP", "EUR" };
+
             var dateProviderMock = new Mock<IDateProvider>();
             dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
 
-            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object);
+            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object, validCurrencyCodes);
 
             //Act
             var result = paymentValidatorService.IsNotValid(cardPayment);
@@ -119,10 +125,12 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
                 Status = PaymentStatus.Requested,
             };
 
+            var validCurrencyCodes = new[] { "USD", "GBP", "EUR" };
+
             var dateProviderMock = new Mock<IDateProvider>();
             dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
 
-            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object);
+            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object, validCurrencyCodes);
 
             //Act
             var result = paymentValidatorService.IsNotValid(cardPayment);
@@ -149,10 +157,12 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
                 Status = PaymentStatus.Requested,
             };
 
+            var validCurrencyCodes = new[] { "USD", "GBP", "EUR" };
+
             var dateProviderMock = new Mock<IDateProvider>();
             dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
 
-            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object);
+            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object, validCurrencyCodes);
 
             //Act
             var result = paymentValidatorService.IsNotValid(cardPayment);
@@ -180,10 +190,12 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
                 Status = PaymentStatus.Requested,
             };
 
+            var validCurrencyCodes = new[] { "USD", "GBP", "EUR" };
+
             var dateProviderMock = new Mock<IDateProvider>();
             dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
 
-            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object);
+            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object, validCurrencyCodes);
 
             //Act
             var result = paymentValidatorService.IsNotValid(cardPayment);
@@ -219,10 +231,12 @@ namespace PaymentGateway.Api.Tests.Unit.Domain.Services
                 Status = PaymentStatus.Requested,
             };
 
+            var validCurrencyCodes = new[] { "USD", "GBP", "EUR" };
+
             var dateProviderMock = new Mock<IDateProvider>();
             dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
 
-            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object);
+            var paymentValidatorService = new PaymentValidatorService(dateProviderMock.Object, validCurrencyCodes);
 
             //Act
             var result = paymentValidatorService.IsNotValid(cardPayment);
