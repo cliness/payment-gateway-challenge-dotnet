@@ -4,6 +4,6 @@ namespace PaymentGateway.Api.Infrastructure.AcquiringBank
 {
     public interface IAcquiringBankClient
     {
-        Task<AcquiringBankAuthorisation?> PostPayment(AcquiringBankPaymentRequest paymentRequest);
+        Task<AcquiringBankPaymentResponse> PostPayment(AcquiringBankPaymentRequest paymentRequest);
     }
 }

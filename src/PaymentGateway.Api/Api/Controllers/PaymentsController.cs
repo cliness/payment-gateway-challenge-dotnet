@@ -40,7 +40,6 @@ public class PaymentsController : Controller
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type=typeof(ValidationProblemDetails))]
     public async Task<ActionResult<PostPaymentResponse>> MakePayment(PostPaymentRequest paymentRequest)
     {
-
         var cardPayment = paymentRequest.ToCardPayment(PaymentStatus.Requested, Guid.NewGuid());
 
         var payment = await _cardPaymentService.MakePayment(cardPayment);

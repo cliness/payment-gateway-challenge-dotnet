@@ -2,7 +2,7 @@
 
 public class PostPaymentRequest
 {
-    public required long CardNumber { get; set; }
+    public required string CardNumber { get; set; }
     public required string Cvv { get; set; }
     public required int ExpiryMonth { get; set; }
     public required int ExpiryYear { get; set; }
