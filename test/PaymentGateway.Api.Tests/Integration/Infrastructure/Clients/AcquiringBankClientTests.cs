@@ -4,11 +4,11 @@ using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 
 using Moq;
+using Moq.Protected;
 
 using PaymentGateway.Api.Infrastructure.AcquiringBank;
 using PaymentGateway.Api.Infrastructure.Configuration;
 using PaymentGateway.Api.Infrastructure.Models;
-using Moq.Protected;
 
 namespace PaymentGateway.Api.Tests.Integration.Infrastructure.Clients
 {

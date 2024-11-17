@@ -1,29 +1,28 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+using Moq;
+
 using PaymentGateway.Api.Api.Controllers;
 using PaymentGateway.Api.Api.Models;
-using PaymentGateway.Api.Infrastructure.AcquiringBank;
-using PaymentGateway.Api.Domain.Services;
-using PaymentGateway.Api.Infrastructure.Repository;
-using PaymentGateway.Api.Domain.Models;
-using PaymentGateway.Api.Infrastructure.Configuration;
 using PaymentGateway.Api.Domain.CardPayments;
+using PaymentGateway.Api.Domain.Models;
+using PaymentGateway.Api.Domain.Services;
+using PaymentGateway.Api.Infrastructure.Configuration;
 using PaymentGateway.Api.Infrastructure.Providers;
-using Moq;
-using System.Text.Json;
-using Microsoft.Extensions.Options;
-using System.Text.Json.Serialization;
+using PaymentGateway.Api.Infrastructure.Repository;
 
 namespace PaymentGateway.Api.Tests.Integration.Api.Controllers;
 
 [Trait("Category", "ThirdPartyAPI")]
 public class PaymentsControllerTests
 {
-    private readonly Uri _acquiringPaymentEndpoint;
     private readonly string[] _validCurrencyCodes;
 
     public PaymentsControllerTests()
@@ -31,13 +30,6 @@ public class PaymentsControllerTests
         var config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.test.json")
             .Build();
-
-        var acquiringPayment = config.GetRequiredSection(nameof(AcquiringBankPaymentSettings)).Get<AcquiringBankPaymentSettings>();
-        if (acquiringPayment?.ServiceEndpoint == null)
-        {
-            throw new Exception("Acquiring Service Endpoint not defined");
-        }
-        _acquiringPaymentEndpoint = acquiringPayment.ServiceEndpoint;
 
         var paymentGatewaySettings = config.GetRequiredSection(nameof(PaymentGatewaySettings)).Get<PaymentGatewaySettings>();
         if (paymentGatewaySettings == null || !paymentGatewaySettings.ValidCurrencyCodes.Any())
@@ -74,11 +66,7 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<IPaymentValidatorService>(services => new PaymentValidatorService(services.GetRequiredService<IDateProvider>(), _validCurrencyCodes))
-                .AddSingleton(dateProviderMock.Object)
-                .AddHttpClient(nameof(AcquiringBankClient), client =>
-                {
-                    client.BaseAddress = _acquiringPaymentEndpoint;
-                })))
+                .AddSingleton(dateProviderMock.Object)))
             .CreateClient();
 
         // Act
@@ -124,11 +112,7 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
                 .AddSingleton<IPaymentValidatorService>(services => new PaymentValidatorService(services.GetRequiredService<IDateProvider>(), _validCurrencyCodes))
-                .AddSingleton(dateProviderMock.Object)
-                .AddHttpClient(nameof(AcquiringBankClient), client =>
-                {
-                    client.BaseAddress = _acquiringPaymentEndpoint;
-                })))
+                .AddSingleton(dateProviderMock.Object)))
             .CreateClient();
 
         // Act
@@ -150,11 +134,7 @@ public class PaymentsControllerTests
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>()
                 .AddSingleton<IPaymentValidatorService>(services => new PaymentValidatorService(services.GetRequiredService<IDateProvider>(), _validCurrencyCodes))
-                .AddSingleton(new Mock<IDateProvider>().Object)
-                .AddHttpClient(nameof(AcquiringBankClient), client =>
-                {
-                    client.BaseAddress = _acquiringPaymentEndpoint;
-                })))
+                .AddSingleton(new Mock<IDateProvider>().Object)))
             .CreateClient();
 
         // Act

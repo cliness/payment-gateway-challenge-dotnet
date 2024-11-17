@@ -55,7 +55,7 @@ public class PaymentsController : Controller
     /// <returns>Payment details</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ValidationProblemDetails))]
     public ActionResult<GetPaymentResponse> GetPayment(Guid id)
     {
         var payment = _paymentsRepository.Get(id);
