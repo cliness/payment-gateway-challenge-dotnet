@@ -14,6 +14,9 @@ using PaymentGateway.Api.Infrastructure.Configuration;
 using PaymentGateway.Api.Domain.CardPayments;
 using PaymentGateway.Api.Infrastructure.Providers;
 using Moq;
+using System.Text.Json;
+using Microsoft.Extensions.Options;
+using System.Text.Json.Serialization;
 
 namespace PaymentGateway.Api.Tests.Integration.Api.Controllers;
 
@@ -63,14 +66,15 @@ public class PaymentsControllerTests
         var dateProviderMock = new Mock<IDateProvider>();
         dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
 
+        var serializeOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        serializeOptions.Converters.Add(new JsonStringEnumConverter());
+
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
-                .AddSingleton<ICardPaymentService, CardPaymentService>()
                 .AddSingleton<IPaymentValidatorService>(services => new PaymentValidatorService(services.GetRequiredService<IDateProvider>(), _validCurrencyCodes))
                 .AddSingleton(dateProviderMock.Object)
-                .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
                 .AddHttpClient(nameof(AcquiringBankClient), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
@@ -82,7 +86,7 @@ public class PaymentsControllerTests
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var paymentResponse = await response.Content.ReadFromJsonAsync<PostPaymentResponse>();
+        var paymentResponse = await response.Content.ReadFromJsonAsync<PostPaymentResponse>(serializeOptions);
         Assert.NotNull(paymentResponse);
         Assert.Equal(PaymentStatus.Authorized, paymentResponse.Status);
     }
@@ -112,14 +116,15 @@ public class PaymentsControllerTests
         var dateProviderMock = new Mock<IDateProvider>();
         dateProviderMock.Setup(provider => provider.TodaysUtcDate()).Returns(new DateOnly(2024, 11, 17));
 
+        var serializeOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        serializeOptions.Converters.Add(new JsonStringEnumConverter());
+
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository>(paymentsRepository)
-                .AddSingleton<ICardPaymentService, CardPaymentService>()
                 .AddSingleton<IPaymentValidatorService>(services => new PaymentValidatorService(services.GetRequiredService<IDateProvider>(), _validCurrencyCodes))
                 .AddSingleton(dateProviderMock.Object)
-                .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
                 .AddHttpClient(nameof(AcquiringBankClient), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
@@ -131,7 +136,8 @@ public class PaymentsControllerTests
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var paymentResponse = await response.Content.ReadFromJsonAsync<GetPaymentResponse>();
+
+        var paymentResponse = await response.Content.ReadFromJsonAsync<GetPaymentResponse>(serializeOptions);
         Assert.NotNull(paymentResponse);
     }
 
@@ -143,10 +149,8 @@ public class PaymentsControllerTests
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => ((ServiceCollection)services)
                 .AddSingleton<IPaymentsRepository, InMemoryPaymentsRepository>()
-                .AddSingleton<ICardPaymentService, CardPaymentService>()
                 .AddSingleton<IPaymentValidatorService>(services => new PaymentValidatorService(services.GetRequiredService<IDateProvider>(), _validCurrencyCodes))
                 .AddSingleton(new Mock<IDateProvider>().Object)
-                .AddSingleton<IAcquiringBankClient, AcquiringBankClient>()
                 .AddHttpClient(nameof(AcquiringBankClient), client =>
                 {
                     client.BaseAddress = _acquiringPaymentEndpoint;
