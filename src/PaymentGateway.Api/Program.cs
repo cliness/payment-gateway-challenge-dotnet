@@ -1,10 +1,5 @@
-<<<<<<< Updated upstream
-=======
-using System.Text.Json.Serialization;
-
 using Microsoft.OpenApi.Models;
 
->>>>>>> Stashed changes
 using PaymentGateway.Api.Domain.Services;
 using PaymentGateway.Api.Infrastructure.AcquiringBank;
 using PaymentGateway.Api.Infrastructure.Configuration;
