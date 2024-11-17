@@ -11,7 +11,7 @@ namespace PaymentGateway.Api.Infrastructure.Translators
             {
                 Id = cardPayment.Id,
                 Status = cardPayment.Status,
-                CardNumberLastFour = cardPayment.CardNumber.Substring(cardPayment.CardNumber.Length - 4, 4),
+                CardNumberLastFour = cardPayment.CardNumber.Length > 4 ? cardPayment.CardNumber.Substring(cardPayment.CardNumber.Length - 4, 4) : cardPayment.CardNumber,
                 ExpiryMonth = cardPayment.ExpiryMonth,
                 ExpiryYear = cardPayment.ExpiryYear,
                 Amount = cardPayment.Amount,
