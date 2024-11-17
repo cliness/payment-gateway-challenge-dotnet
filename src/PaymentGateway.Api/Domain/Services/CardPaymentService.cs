@@ -1,5 +1,4 @@
-﻿
-using PaymentGateway.Api.Domain.CardPayments;
+﻿using PaymentGateway.Api.Domain.CardPayments;
 using PaymentGateway.Api.Domain.Models;
 using PaymentGateway.Api.Infrastructure.AcquiringBank;
 using PaymentGateway.Api.Infrastructure.Repository;
